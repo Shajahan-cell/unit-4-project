@@ -1,0 +1,281 @@
+#include <stdio.h>
+
+enum VehicleType { CAR = 1, BIKE = 2 };
+enum RentalStatus { AVAILABLE = 1, RENTED = 2 };
+
+union Details {
+    int seats;
+    int engine;
+};
+
+struct Vehicle {
+    int id;
+    char name[50], brand[50];
+    enum VehicleType type;
+    enum RentalStatus status;
+    union Details detail;
+};
+
+struct Vehicle v[50];
+int count = 0;
+
+void addVehicle() {
+    int i, choice;
+
+    if (count >= 50) {
+        printf("Vehicle limit reached!\n");
+        return;
+    }
+
+    printf("Enter Vehicle ID: ");
+    scanf("%d", &v[count].id);
+
+    for (i = 0; i < count; i++) {
+        if (v[i].id == v[count].id) {
+            printf("Vehicle ID already exists!\n");
+            return;
+        }
+    }
+
+    printf("Enter Vehicle Name: ");
+    scanf(" %49[^\n]", v[count].name);
+
+    printf("Enter Brand: ");
+    scanf(" %49[^\n]", v[count].brand);
+
+    printf("1. Car\n2. Bike\n");
+    printf("Enter Vehicle Type: ");
+    scanf("%d", &choice);
+
+    if (choice == CAR) {
+        v[count].type = CAR;
+        printf("Enter Number of Seats: ");
+        scanf("%d", &v[count].detail.seats);
+    }
+    else if (choice == BIKE) {
+        v[count].type = BIKE;
+        printf("Enter Engine Capacity: ");
+        scanf("%d", &v[count].detail.engine);
+    }
+    else {
+        printf("Invalid Vehicle Type!\n");
+        return;
+    }
+
+    v[count].status = AVAILABLE;
+    count++;
+
+    printf("Vehicle Added Successfully!\n");
+}
+
+void displayVehicles() {
+    int i;
+
+    if (count == 0) {
+        printf("No Vehicles Found!\n");
+        return;
+    }
+
+    for (i = 0; i < count; i++) {
+        printf("\nID: %d", v[i].id);
+        printf("\nName: %s", v[i].name);
+        printf("\nBrand: %s", v[i].brand);
+
+        if (v[i].type == CAR)
+            printf("\nType: Car\nSeats: %d", v[i].detail.seats);
+        else
+            printf("\nType: Bike\nEngine: %d CC", v[i].detail.engine);
+
+        printf("\nStatus: %s\n",
+            v[i].status == AVAILABLE ? "Available" : "Rented");
+    }
+}
+
+void searchVehicle() {
+    int id, i;
+
+    printf("Enter Vehicle ID: ");
+    scanf("%d", &id);
+
+    for (i = 0; i < count; i++) {
+        if (v[i].id == id) {
+            printf("Vehicle Found!\n");
+            printf("Name: %s\n", v[i].name);
+            printf("Brand: %s\n", v[i].brand);
+            printf("Status: %s\n",
+                v[i].status == AVAILABLE ? "Available" : "Rented");
+            return;
+        }
+    }
+
+    printf("Vehicle Not Found!\n");
+}
+
+void rentVehicle() {
+    int id, i;
+
+    printf("Enter Vehicle ID: ");
+    scanf("%d", &id);
+
+    for (i = 0; i < count; i++) {
+        if (v[i].id == id) {
+            if (v[i].status == AVAILABLE) {
+                v[i].status = RENTED;
+                printf("Vehicle Rented Successfully!\n");
+            }
+            else {
+                printf("Vehicle Already Rented!\n");
+            }
+            return;
+        }
+    }
+
+    printf("Vehicle Not Found!\n");
+}
+
+void returnVehicle() {
+    int id, i;
+
+    printf("Enter Vehicle ID: ");
+    scanf("%d", &id);
+
+    for (i = 0; i < count; i++) {
+        if (v[i].id == id) {
+            if (v[i].status == RENTED) {
+                v[i].status = AVAILABLE;
+                printf("Vehicle Returned Successfully!\n");
+            }
+            else {
+                printf("Vehicle Is Already Available!\n");
+            }
+            return;
+        }
+    }
+
+    printf("Vehicle Not Found!\n");
+}
+
+void displayAvailable() {
+    int i, found = 0;
+
+    printf("\nAvailable Vehicles:\n");
+
+    for (i = 0; i < count; i++) {
+        if (v[i].status == AVAILABLE) {
+            printf("ID: %d  Name: %s  Brand: %s\n",
+                v[i].id, v[i].name, v[i].brand);
+            found = 1;
+        }
+    }
+
+    if (!found)
+        printf("No Available Vehicles!\n");
+}
+
+int main() {
+    int choice;
+
+    do {
+        printf("\n===== VEHICLE RENTAL MANAGEMENT SYSTEM =====\n");
+        printf("1. Add Vehicle\n");
+        printf("2. Display All Vehicles\n");
+        printf("3. Search Vehicle\n");
+        printf("4. Rent Vehicle\n");
+        printf("5. Return Vehicle\n");
+        printf("6. Display Available Vehicles\n");
+        printf("7. Exit\n");
+
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: addVehicle(); break;
+            case 2: displayVehicles(); break;
+            case 3: searchVehicle(); break;
+            case 4: rentVehicle(); break;
+            case 5: returnVehicle(); break;
+            case 6: displayAvailable(); break;
+            case 7: printf("Thank You!\n"); break;
+            default: printf("Invalid Choice!\n");
+        }
+
+    } while (choice != 7);
+
+    return 0;
+}
+
+
+OUTPUT:
+
+       ===== VEHICLE RENTAL MANAGEMENT SYSTEM =====
+
+1. Add Vehicle
+2. Display All Vehicles
+3. Search Vehicle
+4. Rent Vehicle
+5. Return Vehicle
+6. Display Available Vehicles
+7. Exit
+
+Enter your choice: 1
+
+Enter Vehicle ID: 101
+Enter Vehicle Name: Swift
+Enter Brand: Maruti
+
+1. Car
+2. Bike
+
+Enter Vehicle Type: 1
+Enter Number of Seats: 5
+
+Vehicle Added Successfully!
+
+Enter your choice: 1
+
+Enter Vehicle ID: 102
+Enter Vehicle Name: Pulsar
+Enter Brand: Bajaj
+
+1. Car
+2. Bike
+
+Enter Vehicle Type: 2
+Enter Engine Capacity: 150
+
+Vehicle Added Successfully!
+
+Enter your choice: 2
+
+ID: 101
+Name: Swift
+Brand: Maruti
+Type: Car
+Seats: 5
+Status: Available
+
+ID: 102
+Name: Pulsar
+Brand: Bajaj
+Type: Bike
+Engine: 150 CC
+Status: Available
+
+Enter your choice: 4
+
+Enter Vehicle ID: 101
+Vehicle Rented Successfully!
+
+Enter your choice: 6
+
+Available Vehicles:
+ID: 102 Name: Pulsar Brand: Bajaj
+
+Enter your choice: 5
+
+Enter Vehicle ID: 101
+Vehicle Returned Successfully!
+
+Enter your choice: 7
+
+Thank You!
